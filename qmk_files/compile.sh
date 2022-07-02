@@ -22,5 +22,5 @@ do
 done
 
 # Flash to microcontroller
-echo "Short GND and RST pin twice within 750 ms to enter bootloader mode"
+echo "Press ESC key while plugging in keyboard to enter bootloader mode"
 qmk flash

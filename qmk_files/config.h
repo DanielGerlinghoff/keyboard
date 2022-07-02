@@ -45,6 +45,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define DIODE_DIRECTION COL2ROW
 
+/* Bootmagic Lite
+ * Assign row and column of ESC key to reset EEPROM and enter bootloader
+ * Hold ESC key down when plugging in the keyboard
+*/
+#define BOOTMAGIC_LITE_ROW 4
+#define BOOTMAGIC_LITE_COLUMN 0
+
 /* Debounce reduces chatter (unintended double-presses)
  * Set 0 if debouncing is not needed
 */
