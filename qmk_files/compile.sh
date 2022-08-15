@@ -8,7 +8,8 @@ qmk_path=$(qmk config user.qmk_home | cut -d '=' -f 2)
 kb_path=$qmk_path/keyboards/$(qmk config user.keyboard | cut -d '=' -f 2)
 km_path=$kb_path/keymaps/$(qmk config user.keymap | cut -d '=' -f 2)
 
-echo "Copying test files to QMK keyboard and keymap directory"
+echo "Replacing test files to QMK keyboard and keymap directory"
+rm -r $kb_path
 mkdir -p $km_path
 
 for file in "config.h lattice60.c lattice60.h rules.mk"

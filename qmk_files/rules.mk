@@ -4,8 +4,6 @@ F_CPU = 8000000
 BOOTLOADER = caterina
 
 # Build Options
-#   change yes to no to disable
-#
 BOOTMAGIC_ENABLE = yes      # Enable Bootmagic Lite
 MOUSEKEY_ENABLE = no        # Mouse keys
 EXTRAKEY_ENABLE = yes       # Audio control and System control
@@ -15,3 +13,7 @@ NKRO_ENABLE = no            # Enable N-Key Rollover
 BACKLIGHT_ENABLE = no       # Enable keyboard backlight functionality
 AUDIO_ENABLE = no           # Audio output
 TAP_DANCE_ENABLE = no       # Enable multi-tap functionality
+COMBO_ENABLE = no           # Enable combo feature
+
+# Software configuration
+DEBOUNCE_TYPE = sym_defer_pr
