@@ -68,3 +68,33 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______,                   _______,                               _______, _______, _______, _______
     ),
 };
+
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+		case KC_BSPC: {
+			static bool delkey_registered;
+			if (record->event.pressed) {
+				// Replace with KC_DEL if any shift key is pressed
+				uint8_t mod_state = get_mods();
+				if (mod_state & MOD_MASK_SHIFT) {
+					del_mods(MOD_MASK_SHIFT);
+					register_code(KC_DEL);
+					delkey_registered = true;
+					set_mods(mod_state);
+					return false;
+				}
+			} else { // on release of KC_BSPC
+				// In case KC_DEL is still being sent even after the release of KC_BSPC
+				if (delkey_registered) {
+					unregister_code(KC_DEL);
+					delkey_registered = false;
+					return false;
+				}
+			}
+			// Let QMK process the KC_BSPC keycode as usual outside of shift
+			return true;
+		}
+    }
+    return true;
+};
