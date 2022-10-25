@@ -14,6 +14,3 @@ BACKLIGHT_ENABLE = no       # Enable keyboard backlight functionality
 AUDIO_ENABLE = no           # Audio output
 TAP_DANCE_ENABLE = no       # Enable multi-tap functionality
 COMBO_ENABLE = no           # Enable combo feature
-
-# Software configuration
-DEBOUNCE_TYPE = sym_defer_pr
