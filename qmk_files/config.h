@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config_common.h"
 
-/* USB Device descriptor parameter */
+/* USB DEVICE DESCRIPTOR PARAMETER */
 #define VENDOR_ID       0xBB80
 #define PRODUCT_ID      0x050D
 #define DEVICE_VER      0x0001
@@ -31,9 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROWS 5
 #define MATRIX_COLS 13
 
-/*
- * Keyboard matrix assignments
- *
+/* KEYBOARD MATRIX ASSIGNMENTS
  * Change this to how you wired your keyboard
  * COLS: AVR pins used for columns, left to right
  * ROWS: AVR pins used for rows, top to bottom
@@ -45,14 +43,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define DIODE_DIRECTION COL2ROW
 
-/* Bootmagic Lite
+/* BOOTMAGIC LITE
  * Assign row and column of ESC key to reset EEPROM and enter bootloader
  * Hold ESC key down when plugging in the keyboard
 */
 #define BOOTMAGIC_LITE_ROW 4
 #define BOOTMAGIC_LITE_COLUMN 0
 
-/* Debounce reduces chatter (unintended double-presses)
+/* DEBOUNCING
+ * Reduce chatter (unintended double-presses)
  * Set 0 if debouncing is not needed
 */
 #define DEBOUNCE 12
+
+/* TAP-HOLD CONFIGURATION
+ * Set tapping term and disable special tap-hold configuration
+ * for Mod Tap keys to make hold less likely to occur
+ * Allow repeated keystrokes to be a hold instead of a tap
+*/
+#define TAPPING_TERM 180
+#define PERMISSIVE_HOLD
+#define IGNORE_MOD_TAP_INTERRUPT
+#define TAPPING_FORCE_HOLD
