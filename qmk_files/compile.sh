@@ -22,6 +22,6 @@ do
     cp $file $km_path
 done
 
-# Flash to microcontroller
+# Compile and flash to microcontroller
 echo "Press ESC key while plugging in keyboard to enter bootloader mode"
 qmk flash

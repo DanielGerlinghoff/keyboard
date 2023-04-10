@@ -2,9 +2,8 @@
 
 #define _COLEMAK 0
 #define _QWERTY 1
-#define _VIM 2
-#define _SPEC 3
-#define _NUM 4
+#define _SPEC 2
+#define _NAV_NUM 3
 
 enum custom_keycodes {
     KC_AE = SAFE_RANGE,
@@ -39,12 +38,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     *  `----------------------------------------------------------------------------------------------------'
     */
     [_COLEMAK] = LAYOUT(
-        KC_ESC,  KC_1,          KC_2,    KC_3, KC_4, KC_5,   KC_6, KC_7, KC_8,    KC_9,   KC_0,    KC_MINS,  KC_EQL,  KC_BSPC,
-        KC_TAB,  TD(TD_QWERTY), KC_W,    KC_F, KC_P, KC_B,   KC_J, KC_L, KC_U,    KC_Y,   KC_SCLN, KC_LBRC,  KC_RBRC, KC_BSLS,
+        KC_ESC,  KC_1,          KC_2,    KC_3, KC_4, KC_5,   KC_6, KC_7, KC_8,    KC_9,   KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
+        KC_TAB,  TD(TD_QWERTY), KC_W,    KC_F, KC_P, KC_B,   KC_J, KC_L, KC_U,    KC_Y,   KC_SCLN, KC_LBRC, KC_RBRC, KC_BSLS,
 
         // Home row
         KC_CAPS,
-        LT(_VIM, KC_A),
+        LT(_NAV_NUM, KC_A),
         LT(_SPEC, KC_R),
         LSFT_T(KC_S),
         LCTL_T(KC_T),
@@ -52,11 +51,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RCTL_T(KC_N),
         RSFT_T(KC_E),
         LT(_SPEC, KC_I),
-        LT(_VIM, KC_O),
+        LT(_NAV_NUM, KC_O),
         KC_QUOT, KC_ENT,
 
-        KC_LSFT, KC_Z,          KC_X,    KC_C, KC_D, KC_V,   KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,  KC_GRV,  KC_VOLU,
-        KC_LCTL, KC_LWIN,       KC_LALT,             KC_SPC,                              KC_LCTL, TG(_NUM), KC_MUTE, KC_VOLD
+        KC_LSFT, KC_Z,          KC_X,    KC_C, KC_D, KC_V,   KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, KC_GRV,  KC_VOLU,
+        KC_LCTL, KC_LWIN,       KC_LALT,             KC_SPC,                              KC_LCTL, _______, KC_MUTE, KC_VOLD
     ),
 
     /* QWERTY
@@ -78,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
         // Home row
         _______,
-        LT(_VIM, KC_A),
+        LT(_NAV_NUM, KC_A),
         LT(_SPEC, KC_S),
         LSFT_T(KC_D),
         LCTL_T(KC_F),
@@ -86,32 +85,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RCTL_T(KC_J),
         RSFT_T(KC_K),
         LT(_SPEC, KC_L),
-        LT(_VIM, KC_SCLN),
+        LT(_NAV_NUM, KC_SCLN),
         _______, _______,
 
         _______, KC_Z,          KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    _______, _______, _______, _______, _______, _______,
         _______, _______,       _______,                            _______,                            _______, _______, _______, _______
-    ),
-
-    /* Vim (in normal mode)
-    *   ,-----------------------------------------------------------------------------------------------------.
-    *   |      |      |      |      |      |      |      |      |      |      |      |      |      |          |
-    *  ,-------+------+------+------+------+------+------+------+------+------+------+------+------+----------'
-    *  |       |      | Word |      | Pste | Prev | ArDn | ArRt | Undo | Copy |      |      |      |        |
-    * ,--------+------+------+------+------+-------------+------+------+------+------+------+------+--------'
-    * |        |      |      | Shft |      |      |      |      | Shft |      |      |      |             |
-    * |--------+------+------+------+------+------|------+------+------+------+------+------+--+-----+------.
-    * |        | Home | Del  |      | End  |      | ArUp | ArLf |      |      |      |         |     |      |
-    * `--------+------++-----+-+----+------+------+------+------+------+------+------++--------+-----+------|
-    *  |       |       |       |                                              |       |        |     |      |
-    *  `----------------------------------------------------------------------------------------------------'
-    */
-    [_VIM] = LAYOUT(
-        _______, _______, _______,    _______, _______, _______,    _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, C(KC_RGHT), _______, C(KC_V), C(KC_LEFT), KC_DOWN, KC_RGHT, C(KC_Z), C(KC_C), _______, _______, _______, _______,
-        _______, _______, _______,    KC_LSFT, _______, _______,    _______, _______, KC_RSFT, _______, _______, _______,      _______,
-        _______, KC_HOME, KC_DEL,     _______, KC_END,  _______,    KC_UP,   KC_LEFT, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______,                      _______,                               _______, _______, _______, _______
     ),
 
     /* Special characters (after Neo) and function keys
@@ -135,25 +113,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______,                            _______,                                              _______,    _______, _______, _______
     ),
 
-    /* Numpad
+    /* Navigation and numpad layer
     *   ,-----------------------------------------------------------------------------------------------------.
-    *   |      |      |      |      |      |      |      |   7  |   8  |   9  |      |      |      |          |
+    *   |      |      | DskLf|      | DskRt|      |      |   7  |   8  |   9  |      |      |      |          |
     *  ,-------+------+------+------+------+------+------+------+------+------+------+------+------+----------'
-    *  |       |      |      |      |      |      |      |   4  |   5  |   6  |      |      |      |        |
+    *  |       |      | Word | ArUp | Pste | Prev |      |   4  |   5  |   6  |      |      |      |        |
     * ,--------+------+------+------+------+-------------+------+------+------+------+------+------+--------'
-    * |        |      |      |      |      |      |      |   1  |   2  |   3  |      |      |             |
+    * |        |      | ArLf | ArDn | ArRt |      |      |   1  |   2  |   3  |      |      |             |
     * |--------+------+------+------+------+------|------+------+------+------+------+------+--+-----+------.
-    * |        |      |      |      |      |      |      |   0  |      |      |      |         |     |      |
+    * |        | Home | Cut  | Copy | End  | Pste |      |   0  |      |      |      |         |     |      |
     * `--------+------++-----+-+----+------+------+------+------+------+------+------++--------+-----+------|
     *  |       |       |       |                                              |       |        |     |      |
     *  `----------------------------------------------------------------------------------------------------'
     */
-    [_NUM] = LAYOUT(
-        _______, _______, _______, _______, _______, _______, _______, KC_7, KC_8,    KC_9,    _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, KC_4, KC_5,    KC_6,    _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, KC_1, KC_2,    KC_3,    _______, _______,      _______,
-        _______, _______, _______, _______, _______, _______, _______, KC_0, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______,                   _______,                                  _______, _______, _______, _______
+    [_NAV_NUM] = LAYOUT(
+        _______, _______, C(G(KC_LEFT)), _______, C(G(KC_RGHT)), _______,    _______, KC_7, KC_8,    KC_9,    _______, _______, _______, _______,
+        _______, _______, C(KC_RGHT),    KC_UP,   S(KC_INS),     C(KC_LEFT), _______, KC_4, KC_5,    KC_6,    _______, _______, _______, _______,
+        _______, _______, KC_LEFT,       KC_DOWN, KC_RGHT,       _______,    _______, KC_1, KC_2,    KC_3,    _______, _______,      _______,
+        _______, KC_HOME, C(KC_X),       C(KC_C), KC_END ,       C(KC_V),    _______, KC_0, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______,                               _______,                                     _______, _______, _______, _______
     ),
 };
 
@@ -190,30 +168,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             // Let QMK process the KC_BSPC keycode as usual outside of shift
-            return true;
-        }
-
-        case KC_DEL: {
-            static bool delkey_registered;
-            if (record->event.pressed) {
-                // Replace with KC_BSPC if any shift key is pressed
-                uint8_t mod_state = get_mods();
-                if (mod_state & MOD_MASK_SHIFT) {
-                    del_mods(MOD_MASK_SHIFT);
-                    register_code(KC_BSPC);
-                    delkey_registered = true;
-                    set_mods(mod_state);
-                    return false;
-                }
-            } else { // on release of KC_BSPC
-                // In case KC_BSPC is still being sent even after the release of KC_BSPC
-                if (delkey_registered) {
-                    unregister_code(KC_BSPC);
-                    delkey_registered = false;
-                    return false;
-                }
-            }
-            // Let QMK process the KC_DEL keycode as usual outside of shift
             return true;
         }
 
