@@ -62,6 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Allow repeated keystrokes to be a hold instead of a tap
 */
 #define TAPPING_TERM 180
+#define TAPPING_TERM_PER_KEY
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT
 #define TAPPING_FORCE_HOLD

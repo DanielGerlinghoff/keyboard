@@ -40,8 +40,8 @@ static td_state_t td_state;
 
 td_state_t cur_dance(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
-        if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
-        else                                       return TD_SINGLE_HOLD;
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else                 return TD_SINGLE_HOLD;
     }
     if (state->count == 2) return TD_DOUBLE_TAP;
     else                   return TD_UNKNOWN;
@@ -220,6 +220,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     return true;
 };
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case QK_TAP_DANCE | TD_CAPS:
+            // Slower tap for Caps Lock
+            return 400;
+        case QK_TAP_DANCE | TD_NAVNUM:
+            // Slower tap for NavNum Lock
+            return 250;
+        default:
+            return TAPPING_TERM;
+    }
+}
 
 void navnum_finished(qk_tap_dance_state_t *state, void *user_data) {
     static bool navnum_layer_locked = false;
