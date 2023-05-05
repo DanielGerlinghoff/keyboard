@@ -16,7 +16,6 @@ enum custom_keycodes {
 /* TAP DANCE DEFINITIONS */
 enum {
     TD_QWERTY,
-    TD_CAPS,
     TD_NAVNUM,
 };
 
@@ -25,7 +24,6 @@ void navnum_reset(qk_tap_dance_state_t *state, void *user_data);
 
 qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_QWERTY] = ACTION_TAP_DANCE_LAYER_TOGGLE(KC_Q, _QWERTY),
-    [TD_CAPS]   = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS),
     [TD_NAVNUM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, navnum_finished, navnum_reset),
 };
 
@@ -52,20 +50,20 @@ td_state_t cur_dance(qk_tap_dance_state_t *state) {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Colemak-DHm
     *   ,-----------------------------------------------------------------------------------------------------.
-    *   | Esc  |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  |   -  |   =  |   Bksp   |
+    *   | Esc  |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  |   -  |   =  |          |
     *  ,-------+------+------+------+------+------+------+------+------+------+------+------+------+----------'
     *  | Tab   |   Q  |   W  |   F  |   P  |   B  |   J  |   L  |   U  |   Y  |   ;  |   [  |   ]  |    \   |
     * ,--------+------+------+------+------+-------------+------+------+------+------+------+------+--------'
-    * | Caps   |   A  |   R  |   S  |   T  |   G  |   M  |   N  |   E  |   I  |   O  |   '  |    Enter    |
+    * |  Bksp  |   A  |   R  |   S  |   T  |   G  |   M  |   N  |   E  |   I  |   O  |   '  |             |
     * |--------+------+------+------+------+------|------+------+------+------+------+------+--+-----+------.
-    * | LShft  |   Z  |   X  |   C  |   D  |   V  |   K  |   H  |   ,  |   .  |   /  |  RShft  |  `  | VUp  |
+    * |  Caps  |   Z  |   X  |   C  |   D  |   V  |   K  |   H  |   ,  |   .  |   /  |  Enter  |  `  | VUp  |
     * `--------+------++-----+-+----+------+------+------+------+------+------+------++--------+-----+------|
     *  | LCtrl | LWin  | LAlt  |                      Space                   |  Fn   | RCtrl  |VMute| VDn  |
     *  `----------------------------------------------------------------------------------------------------'
     */
     [_COLEMAK] = LAYOUT(
-        KC_ESC,      KC_1,          KC_2,    KC_3, KC_4, KC_5,   KC_6, KC_7, KC_8,    KC_9,   KC_0,    KC_MINS, KC_EQL,  _______,
-        KC_TAB,      TD(TD_QWERTY), KC_W,    KC_F, KC_P, KC_B,   KC_J, KC_L, KC_U,    KC_Y,   KC_SCLN, KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_ESC,  KC_1,          KC_2,    KC_3, KC_4, KC_5,   KC_6, KC_7, KC_8,    KC_9,   KC_0,    KC_MINS, KC_EQL,  _______,
+        KC_TAB,  TD(TD_QWERTY), KC_W,    KC_F, KC_P, KC_B,   KC_J, KC_L, KC_U,    KC_Y,   KC_SCLN, KC_LBRC, KC_RBRC, KC_BSLS,
 
         // Home row
         KC_BSPC,
@@ -78,10 +76,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RSFT_T(KC_E),
         LT(_SPEC, KC_I),
         LT(_NAV_NUM, KC_O),
-        KC_QUOT, KC_ENT,
+        KC_QUOT, _______,
 
-        TD(TD_CAPS), KC_Z,          KC_X,    KC_C, KC_D, KC_V,   KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, KC_GRV,  KC_VOLU,
-        KC_LCTL,     KC_LWIN,       KC_LALT,             KC_SPC,                              KC_LCTL, _______, KC_MUTE, KC_VOLD
+        KC_CAPS, KC_Z,          KC_X,    KC_C, KC_D, KC_V,   KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_ENT,  KC_GRV,  KC_VOLU,
+        KC_LCTL, KC_LWIN,       KC_LALT,             KC_SPC,                              KC_LCTL, _______, KC_MUTE, KC_VOLD
     ),
 
     /* QWERTY
@@ -223,9 +221,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case QK_TAP_DANCE | TD_CAPS:
-            // Slower tap for Caps Lock
-            return 400;
         case QK_TAP_DANCE | TD_NAVNUM:
             // Slower tap for NavNum Lock
             return 250;
