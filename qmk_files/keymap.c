@@ -1,15 +1,19 @@
 #include QMK_KEYBOARD_H
 
+#include "heatmap.h"
+
 #define _COLEMAK 0
 #define _QWERTY 1
 #define _SPEC 2
 #define _NAV_NUM 3
+
 
 enum custom_keycodes {
     KC_AE = SAFE_RANGE,
     KC_OE,
     KC_UE,
     KC_SS,
+    KC_HEAT,
 };
 
 
@@ -139,7 +143,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     /* Navigation and numpad layer
     *   ,-----------------------------------------------------------------------------------------------------.
-    *   |      |      | DskLf|      | DskRt|      |      |   7  |   8  |   9  |      |      |      |          |
+    *   | Heat |      | DskLf|      | DskRt|      |      |   7  |   8  |   9  |      |      |      |          |
     *  ,-------+------+------+------+------+------+------+------+------+------+------+------+------+----------'
     *  |       |      | Word | ArUp | Pste | Prev |   /  |   4  |   5  |   6  |   -  |      |      |        |
     * ,--------+------+------+------+------+-------------+------+------+------+------+------+------+--------'
@@ -151,7 +155,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     *  `----------------------------------------------------------------------------------------------------'
     */
     [_NAV_NUM] = LAYOUT(
-        _______, _______, C(G(KC_LEFT)), _______, C(G(KC_RGHT)), _______,    _______,    KC_7, KC_8,    KC_9,    _______,   _______, _______, _______,
+        KC_HEAT, _______, C(G(KC_LEFT)), _______, C(G(KC_RGHT)), _______,    _______,    KC_7, KC_8,    KC_9,    _______,   _______, _______, _______,
         _______, _______, C(KC_RGHT),    KC_UP,   S(KC_INS),     C(KC_LEFT), KC_SLSH,    KC_4, KC_5,    KC_6,    KC_MINS,   _______, _______, _______,
         _______, _______, KC_LEFT,       KC_DOWN, KC_RGHT,       _______,    S(KC_8),    KC_1, KC_2,    KC_3,    S(KC_EQL), _______,      _______,
         _______, KC_HOME, C(KC_X),       C(KC_C), KC_END ,       C(KC_V),    S(KC_SCLN), KC_0, _______, _______, _______,   _______, _______, _______,
@@ -214,6 +218,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SS_RALT("s"));
             }
             break;
+
+        // Dump keycount array as a Python list
+        case KC_HEAT:
+            if (record->event.pressed) {
+                // Convert to string
+                char keycount_str[MATRIX_ROWS*MATRIX_COLS*6];
+                dump_keycount(keycount_str);
+
+                // Send user hash, tap and keycount list
+                SEND_STRING(USERHASH);
+                SEND_STRING(SS_TAP(X_TAB));
+                send_string(keycount_str);
+            }
+            break;
+    }
+
+    // Update key counter for heatmap
+    if (record->event.pressed) {
+        increment_keycount(record);
     }
 
     return true;

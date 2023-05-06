@@ -8,7 +8,7 @@ qmk_path=$(qmk config user.qmk_home | cut -d '=' -f 2)
 kb_path=$qmk_path/keyboards/$(qmk config user.keyboard | cut -d '=' -f 2)
 km_path=$kb_path/keymaps/$(qmk config user.keymap | cut -d '=' -f 2)
 
-echo "Replacing test files to QMK keyboard and keymap directory"
+echo "Placing source files into QMK keyboard and keymap directories"
 rm -r $kb_path
 mkdir -p $km_path
 
@@ -17,7 +17,7 @@ do
     cp $file $kb_path
 done
 
-for file in "keymap.c"
+for file in "keymap.c heatmap.c heatmap.h"
 do
     cp $file $km_path
 done

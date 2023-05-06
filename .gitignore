@@ -1,2 +1,6 @@
 /blog/
 /pictures/
+
+# Sentitive information
+heatmap/deploy_credentials.sh
+heatmap/db_credentials.php
