@@ -47,7 +47,8 @@ if (isset($_POST['submit'])) {
       </div>
     </div>
     <div id="image-container">
-      <img src="https://example.com/image.jpg" alt="An example image">
+      <!-- Bypass browser caching by making URL unique -->
+      <img src="heatmap.png?t=<?php echo time(); ?>" alt="Your heatmap will be displayed here">
     </div>
 
 <?php

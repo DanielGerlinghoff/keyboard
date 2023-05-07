@@ -48,6 +48,12 @@ function insert_data($user, $count) {
   $stmt->close();
   $conn->close();
 
+  // generate heatmap from data
+  exec("python3 heatmap.py $user", $output, $return);
+  if ($return != 0) {
+    return "Something went wrong with the heatmap generation";
+  }
+
   // set a success message
   return "Upload successful!";
 }
