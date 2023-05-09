@@ -5,7 +5,7 @@
 
 
 // Define the global 2D array
-uint8_t keycount[MATRIX_ROWS][MATRIX_COLS] = {0};
+uint16_t keycount[MATRIX_ROWS][MATRIX_COLS] = {0};
 
 // Function to increment keycount value based on key position
 void increment_keycount(keyrecord_t *record) {

@@ -1,4 +1,6 @@
 body {
+  max-width: 1200px;
+  margin: 0 auto;
   background-color: black;
   background-image: url('background.png');
   background-repeat: no-repeat;
@@ -23,8 +25,16 @@ body {
   border-radius: 20px;
 }
 
-#form-container, #guide-container {
-  width: 50%;
+#hash-container {
+  margin-top: 40px;
+}
+
+#form-container {
+  width: 425px;
+}
+
+#guide-container {
+  flex-grow: 1;
 }
 
 #image-container {
@@ -36,7 +46,7 @@ body {
   height: auto;
 }
 
-input[type="text"], input[type="submit"], textarea, #generate-hash {
+input[type="submit"], textarea, #generate-hash {
   font-family: sans-serif;
   font-size: 18px;
   color: #222222;
@@ -47,13 +57,10 @@ input[type="text"], input[type="submit"], textarea, #generate-hash {
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
 }
 
-input[type="text"], textarea {
+textarea {
   width: 100%;
+  font-family: Consolas, 'Courier New', Courier, monospace;
   background-color: rgba(255, 255, 255, 0.8);
-}
-
-input[type="text"] {
-  height: 50px;
 }
 
 input[type="submit"], #generate-hash {

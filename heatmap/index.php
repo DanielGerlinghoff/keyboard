@@ -23,8 +23,8 @@ if (isset($_POST['submit'])) {
       <div id="form-container">
         <div id="submit-container">
           <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <p><input type="text" name="user" placeholder="User Hash" required></p>
-            <p><textarea name="count" rows="5" cols="40" placeholder="Enter Key Count Array" required></textarea></p>
+            <p><textarea name="user" rows="2" cols="50" placeholder="User Hash" required></textarea></p>
+            <p><textarea name="count" rows="5" cols="40" placeholder="Key Count Array" required></textarea></p>
             <p><input type="submit" name="submit" value="Submit"></p>
             <div id="success-message"></div>
           </form>

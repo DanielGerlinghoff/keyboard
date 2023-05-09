@@ -8,7 +8,7 @@
 #define USERHASH "fa12c64fbaa2393b23b82b690e9f835365c631dedf91679167e860cc5027b053"
 
 // Declare the global 2D array
-extern uint8_t keycount[MATRIX_ROWS][MATRIX_COLS];
+extern uint16_t keycount[MATRIX_ROWS][MATRIX_COLS];
 
 // Function to increment keycount value based on key position
 void increment_keycount(keyrecord_t *record);
