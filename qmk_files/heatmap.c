@@ -21,21 +21,27 @@ void increment_keycount(keyrecord_t *record) {
 void dump_keycount(char *output) {
   char buffer[256];
   sprintf(output, "[");
-  for (int row = 0; row < MATRIX_ROWS; row++) {
+  for (int phy_row = 0; phy_row < PHYSICAL_ROWS; phy_row++) {
     sprintf(buffer, "[");
     strcat(output, buffer);
-    for (int col = 0; col < MATRIX_COLS; col++) {
-      sprintf(buffer, "%d", keycount[row][col]);
+    for (int phy_col = 0; phy_col < PHYSICAL_COLS; phy_col++) {
+      int mat_row = transform_row[phy_row][phy_col];
+      int mat_col = transform_col[phy_row][phy_col];
+      if (mat_row != -1 && mat_col != -1) {
+        sprintf(buffer, "%d", keycount[mat_row][mat_col]);
+      } else {
+        sprintf(buffer, "%d", -1);
+      }
       strcat(output, buffer);
-      if (col != MATRIX_COLS - 1) {
+      if (phy_col != PHYSICAL_COLS - 1) {
         sprintf(buffer, ",");
         strcat(output, buffer);
       }
-      keycount[row][col] = 0;
+      keycount[mat_row][mat_col] = 0;
     }
     sprintf(buffer, "]");
     strcat(output, buffer);
-    if (row != MATRIX_ROWS - 1) {
+    if (phy_row != PHYSICAL_ROWS - 1) {
       sprintf(buffer, ",");
       strcat(output, buffer);
     }
