@@ -78,7 +78,7 @@ def draw_heatmap(keys, counts):
     """
 
     # Create the keymap basemap
-    upscale = 8
+    upscale = 20
     fig, ax = create_keymap(keys, figsize=(10, 3), upscale=upscale)
 
     # Create a zero np array that matches the size of ax
@@ -101,21 +101,28 @@ def draw_heatmap(keys, counts):
             row_grid, col_grid = np.meshgrid(row_idx, col_idx)
             heatmap[row_grid, col_grid] = counts[row, col]
 
-    # Invert the y axis of the array
-    heatmap = heatmap[::-1]
     heatmap_max = heatmap.max()
 
     # Smooth the array using a Gauss filter and normalize it
-    sigma = 4
+    sigma = 8
     heatmap_smooth = gaussian_filter(heatmap, sigma=sigma)
     heatmap_smooth = heatmap_smooth / heatmap_smooth.max() * heatmap_max
+
+    # Mask values outside of the keyboard outline
+    for row in range(counts.shape[0]):
+        row_idx = np.arange(row * upscale, (row + 1) * upscale)
+        left_pad = ceil(keys[row, 0] * upscale) + 1
+        right_pad = ceil(keys[row].sum() * upscale)
+
+        heatmap_smooth[row_idx, :left_pad] = 0
+        heatmap_smooth[row_idx, right_pad:] = 0
 
     # Define the colormap as a dictionary with the colors and alpha values
     colors = [(0, 0, 1, .0), (0, 1, 1, .5), (1, 1, 0, .8), (1, 0, 0, .9)]
     cmap_alpha = mcolors.LinearSegmentedColormap.from_list("heat", colors)
 
     # Create a new figure and plot the smoothed heatmap
-    im = ax.imshow(heatmap_smooth, cmap=cmap_alpha,
+    im = ax.imshow(heatmap_smooth[::-1], cmap=cmap_alpha,
                    interpolation="spline16", zorder=2)
 
     # Add a colorbar with opaque colorbar and a label
