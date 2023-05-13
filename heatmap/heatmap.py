@@ -5,6 +5,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.cm import ScalarMappable
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from math import ceil
 from scipy.ndimage import gaussian_filter
@@ -78,7 +79,7 @@ def draw_heatmap(keys, counts):
 
     # Create the keymap basemap
     upscale = 8
-    fig, ax = create_keymap(keys, figsize=(10, 4), upscale=upscale)
+    fig, ax = create_keymap(keys, figsize=(10, 3), upscale=upscale)
 
     # Create a zero np array that matches the size of ax
     heatmap = np.zeros((ceil(ax.get_ylim()[1]), ceil(ax.get_xlim()[1])))
@@ -102,36 +103,43 @@ def draw_heatmap(keys, counts):
 
     # Invert the y axis of the array
     heatmap = heatmap[::-1]
+    heatmap_max = heatmap.max()
 
     # Smooth the array using a Gauss filter and normalize it
     sigma = 4
     heatmap_smooth = gaussian_filter(heatmap, sigma=sigma)
-    heatmap_smooth = heatmap_smooth / heatmap_smooth.max() * heatmap.max()
+    heatmap_smooth = heatmap_smooth / heatmap_smooth.max() * heatmap_max
 
     # Define the colormap as a dictionary with the colors and alpha values
-    cmap_colors = [(0, 0, 1, .0), (0, 1, 1, .5), (1, 1, 0, .8), (1, 0, 0, .9)]
-    cmap = mcolors.LinearSegmentedColormap.from_list("heatmap", cmap_colors)
+    colors = [(0, 0, 1, .0), (0, 1, 1, .5), (1, 1, 0, .8), (1, 0, 0, .9)]
+    cmap_alpha = mcolors.LinearSegmentedColormap.from_list("heat", colors)
 
     # Create a new figure and plot the smoothed heatmap
-    im = ax.imshow(heatmap_smooth, cmap=cmap,
+    im = ax.imshow(heatmap_smooth, cmap=cmap_alpha,
                    interpolation="spline16", zorder=2)
 
-    # Add a colorbar and a label
+    # Add a colorbar with opaque colorbar and a label
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="3%", pad=0.6)
+    cax = divider.append_axes("right", size="3%", pad=0.8)
+
+    cmap_opaque = cmap_alpha.copy()
+    cmap_opaque._init()
+    cmap_opaque._lut[:, -1] = np.clip(cmap_opaque._lut[:, -1] + 0.2, 0, 1)
+
+    smap = ScalarMappable(norm=mcolors.Normalize(0, heatmap_max),
+                          cmap=cmap_opaque)
+    cbar = plt.colorbar(smap, cax=cax)
+    cbar.ax.tick_params(labelsize=14, labelcolor="black")
+    cbar.outline.set_linewidth(0.5)
 
     plt.rcParams["font.family"] = "Consolas, monospace"
-    cbar = plt.colorbar(im, cax=cax)
-    cbar.ax.tick_params(labelsize=12, labelcolor="grey")
-    cbar.outline.set_color("grey")
-
     cbar.ax.text(-0.5, cbar.ax.get_ylim()[1] / 2, "Key Count",
-                 fontsize=12, color="grey", rotation=90,
+                 fontsize=16, color="black", rotation=90,
                  va="center", ha="right")
 
     # Save the plot as heatmap.png
     fig.tight_layout()
-    plt.savefig("heatmap.png", dpi=300, transparent=False)
+    plt.savefig("heatmap.png", dpi=100, transparent=True)
 
 
 if __name__ == "__main__":

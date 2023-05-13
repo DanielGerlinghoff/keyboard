@@ -36,7 +36,7 @@ def create_keymap(keys, figsize=(10, 5), upscale=10):
             rect_style = "round,pad={},rounding_size={}"\
                          .format(-0.05*upscale, 0.15*upscale)
             rect = FancyBboxPatch((x, y), key_width * upscale, upscale,
-                                  facecolor="grey", boxstyle=rect_style,
+                                  facecolor="#606060", boxstyle=rect_style,
                                   ec="none")
 
             # Add rectangle to axes object
