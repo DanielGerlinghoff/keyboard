@@ -8,8 +8,13 @@ if (isset($_POST['submit'])) {
   $user = $_POST['user'];
   $count = $_POST['count'];
 
-  // insert data into the table and display the result
+  // insert data into the table
   $success_message = insert_data($user, $count);
+  $success_message .= "<br>";
+
+  // return the heatmap as HTML
+  $heatmap = "";
+  $success_message .= draw_heatmap($user, $heatmap);
 }
 ?>
 
@@ -47,8 +52,13 @@ if (isset($_POST['submit'])) {
       </div>
     </div>
     <div id="image-container">
-      <!-- Bypass browser caching by making URL unique -->
-      <img src="heatmap.png?t=<?php echo time(); ?>" alt="Your heatmap will be displayed here">
+<?php
+if (isset($heatmap)) {
+  echo $heatmap;
+} else {
+  echo "Your heatmap will be displayed here";
+}
+?>
     </div>
 
 <?php

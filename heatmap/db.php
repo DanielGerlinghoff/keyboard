@@ -23,7 +23,7 @@ function insert_data($user, $count) {
   $conn = connect_db();
 
   // prepare and execute the insert query
-  $unsuccessful_message = "The database upload was unsuccessful";
+  $unsuccessful_message = "Database upload was unsuccessful.";
 
   $stmt = $conn->prepare("INSERT INTO keycount (time, user, count) VALUES (?, ?, ?)");
   if (!$stmt) {
@@ -48,13 +48,20 @@ function insert_data($user, $count) {
   $stmt->close();
   $conn->close();
 
+  // set a success message
+  return "Upload successful!";
+}
+
+// call Python script to generate heatmap
+function draw_heatmap($user, &$image) {
   // generate heatmap from data
   exec("python3 heatmap.py $user", $output, $return);
   if ($return != 0) {
-    return "Something went wrong with the heatmap generation";
+    return "Heatmap generation was unsuccessful.";
   }
+  $image = $output[0];
 
   // set a success message
-  return "Upload successful!";
+  return "Heatmap generated!";
 }
 ?>

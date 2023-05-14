@@ -9,6 +9,8 @@ from matplotlib.cm import ScalarMappable
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from math import ceil
 from scipy.ndimage import gaussian_filter
+import io
+import base64
 
 from keymap import create_keymap
 
@@ -144,9 +146,17 @@ def draw_heatmap(keys, counts):
                  fontsize=16, color="black", rotation=90,
                  va="center", ha="right")
 
-    # Save the plot as heatmap.png
     fig.tight_layout()
-    plt.savefig("heatmap.png", dpi=100, transparent=True)
+
+    # Encode the image as a base64 string
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format='png', dpi=100, transparent=True)
+    buffer.seek(0)
+    image_data = base64.b64encode(buffer.getvalue()).decode()
+
+    # Embed the image into the HTML using a data URI
+    html = f'<img src="data:image/png;base64,{image_data}">'
+    return html
 
 
 if __name__ == "__main__":
@@ -161,8 +171,9 @@ if __name__ == "__main__":
                      [0.25, 1.50, 1.25, 1.50, 6.25, 1.25, 1.50, 1.00, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]])
     counts = retrieve_keycount(user_hash)
 
-    # Save the heatmap
-    draw_heatmap(keys, counts)
+    # Draw the heatmap and output to PHP side
+    heatmap = draw_heatmap(keys, counts)
+    print(heatmap)
 
     # Exit with return value 0
     sys.exit(0)
