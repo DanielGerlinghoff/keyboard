@@ -16,13 +16,17 @@ while getopts ":f:" opt; do
   esac
 done
 
-# Loop through all the files in the current directory
+# Construct the list of files to copy
+files_to_copy=""
 for file in *; do
-  # Skip the script itself and the files in the exclude list
-  if [[ "$file" != "$script_name" && ! " ${exclude_array[@]} " =~ " $file " ]]; then
-    # Copy the file to the destination using scp
+  # Skip directories, the script itself, and files in the exclude list
+  if [[ -f "$file" && "$file" != "$script_name" && ! " ${exclude_array[@]} " =~ " $file " ]]; then
+    # Add the file to the list of files to copy
     if [[ -z $file_to_copy ]] || [[ "$file" == "$file_to_copy" ]]; then
-      scp "$file" "$destination"
+      files_to_copy+=" $file"
     fi
   fi
 done
+
+# Copy the files to the destination using a single scp command
+scp $files_to_copy "$destination"
