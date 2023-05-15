@@ -17,6 +17,14 @@ body {
   justify-content: space-between;
 }
 
+#form-container {
+  width: 425px;
+  min-width: 425px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 #submit-container, #guide-container, #hash-container, #image-container {
   background-color: rgba(232, 222, 169, 0.7);
   padding: 20px;
@@ -25,12 +33,8 @@ body {
   border-radius: 20px;
 }
 
-#hash-container {
-  margin-top: 40px;
-}
-
-#form-container {
-  width: 425px;
+#submit-container, #hash-container {
+  flex-grow: 1;
 }
 
 #guide-container {

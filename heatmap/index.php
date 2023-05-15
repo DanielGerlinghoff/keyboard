@@ -20,7 +20,7 @@ if (isset($_POST['submit'])) {
 
 <html>
   <head>
-    <title>My Website</title>
+    <title>Heatmap Generator for QMK Keybords</title>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -42,13 +42,13 @@ if (isset($_POST['submit'])) {
         </div>
       </div>
       <div id="guide-container">
-        <h2>User Guide</h2>
-        <p>Here's how to use the website:</p>
-        <ul>
-          <li>Step 1: Do something</li>
-          <li>Step 2: Do something else</li>
-          <li>Step 3: Do something else</li>
-        </ul>
+<?php
+// For user guide, read the markdown file and convert it to HTML
+require_once 'lib/Parsedown.php';
+$guideMarkdown = file_get_contents("guide.md");
+$guideHtml = (new Parsedown())->text($guideMarkdown);
+echo $guideHtml;
+?>
       </div>
     </div>
     <div id="image-container">
