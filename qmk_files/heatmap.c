@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "quantum.h"
 #include "heatmap.h"
 
 
@@ -18,34 +19,40 @@ void increment_keycount(keyrecord_t *record) {
 }
 
 // Function to dump keycount array as a Python list
-void dump_keycount(char *output) {
-  char buffer[256];
+void dump_keycount(void) {
+  // Construct string with Python-like list
+  char output[PHYSICAL_ROWS*PHYSICAL_COLS*6];
+
   sprintf(output, "[");
   for (int phy_row = 0; phy_row < PHYSICAL_ROWS; phy_row++) {
-    sprintf(buffer, "[");
-    strcat(output, buffer);
+    strcat(output, "[");
     for (int phy_col = 0; phy_col < PHYSICAL_COLS; phy_col++) {
+      // Transform physical to wire matrix position
       int mat_row = transform_row[phy_row][phy_col];
       int mat_col = transform_col[phy_row][phy_col];
+
+      // Append keycount to current output string
       if (mat_row != -1 && mat_col != -1) {
-        sprintf(buffer, "%d", keycount[mat_row][mat_col]);
+        sprintf(output + strlen(output), "%d", keycount[mat_row][mat_col]);
       } else {
-        sprintf(buffer, "%d", -1);
+        sprintf(output + strlen(output), "%d", -1);
       }
-      strcat(output, buffer);
       if (phy_col != PHYSICAL_COLS - 1) {
-        sprintf(buffer, ",");
-        strcat(output, buffer);
+        strcat(output, ",");
       }
+
+      // Reset keycount
       keycount[mat_row][mat_col] = 0;
     }
-    sprintf(buffer, "]");
-    strcat(output, buffer);
+    strcat(output, "]");
     if (phy_row != PHYSICAL_ROWS - 1) {
-      sprintf(buffer, ",");
-      strcat(output, buffer);
+      strcat(output, ",");
     }
   }
-  sprintf(buffer, "]");
-  strcat(output, buffer);
+  strcat(output, "]");
+
+  // Send user hash, tab and keycount list
+  SEND_STRING(USERHASH);
+  SEND_STRING(SS_TAP(X_TAB));
+  send_string(output);
 }

@@ -35,6 +35,6 @@ extern uint16_t keycount[MATRIX_ROWS][MATRIX_COLS];
 void increment_keycount(keyrecord_t *record);
 
 // Function to dump keycount array as a Python list
-void dump_keycount(char *output);
+void dump_keycount(void);
 
 #endif // HEATMAP_H

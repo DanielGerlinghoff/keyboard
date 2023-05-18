@@ -218,25 +218,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SS_RALT("s"));
             }
             break;
-
-        // Dump keycount array as a Python list
-        case KC_HEAT:
-            if (record->event.pressed) {
-                // Convert to string
-                char keycount_str[MATRIX_ROWS*MATRIX_COLS*6];
-                dump_keycount(keycount_str);
-
-                // Send user hash, tap and keycount list
-                SEND_STRING(USERHASH);
-                SEND_STRING(SS_TAP(X_TAB));
-                send_string(keycount_str);
-            }
-            break;
     }
 
-    // Update key counter for heatmap
+    // Functions for heatmap generation
     if (record->event.pressed) {
+        // Update key counter for heatmap
         increment_keycount(record);
+
+        // Dump keycount array as a Python list
+        if (keycode == KC_HEAT)
+            dump_keycount();
     }
 
     return true;
