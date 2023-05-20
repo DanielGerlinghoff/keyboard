@@ -25,6 +25,9 @@ if (isset($_POST['submit'])) {
   </head>
   <body>
     <div id="container">
+      <div id="guide-container">
+        <?php include 'guide.html'; ?>
+      </div>
       <div id="form-container">
         <div id="submit-container">
           <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -40,15 +43,6 @@ if (isset($_POST['submit'])) {
             <p><textarea id="hash-textbox" rows="2" cols="50"></textarea></p>
           </form>
         </div>
-      </div>
-      <div id="guide-container">
-<?php
-// For user guide, read the markdown file and convert it to HTML
-require_once 'lib/Parsedown.php';
-$guideMarkdown = file_get_contents("guide.md");
-$guideHtml = (new Parsedown())->text($guideMarkdown);
-echo $guideHtml;
-?>
       </div>
     </div>
     <div id="image-container">

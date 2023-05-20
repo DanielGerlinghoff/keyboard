@@ -1,0 +1,98 @@
+<h1>Generate a Heatmap for Your QMK Keyboard</h1>
+<p>With heatmaps you can track the key usage and optimise keyboard layouts for efficiency and comfort.</p>
+
+<h2 class="accordion-heading">Step 1: Tell us your layout and get your personal key in return</h2>
+<div class="accordion-content">
+  <p>Assuming your keyboard looks like this ...</p>
+  <img src="img/1_keymap.png" width="100">
+  <p>create a 2D Python-like list with <code>row_max = 2</code> rows and <code>col_max + 1 = 4</code> columns. Each entry in the array specifies the key width in <em>units u</em>, with the following exceptions:</p>
+  <ul>
+    <li>The first column is the initial offset (also in <em>u</em>)</li>
+    <li>Rows are padded with zero at the end</li>
+  </ul>
+  <p>For your keyboard above, that is</p>
+  <pre><code>
+    [[0.5, 1.0, 1.5, 0.0],
+     [0.0, 1.0, 1.0, 1.0]]
+  </code></pre>
+  <p>After entering the keymap into the textbox on the bottom left and clicking the <em>Register</em> button, you will get a random 64 digit hash. Save that one for the next step.</p>
+</div>
+
+<h2 class="accordion-heading">Step 2: Add the heatmap functions to the QMK firmware</h2>
+<div class="accordion-content">
+  <p>Download <a href="https://github.com/DanielGerlinghoff/keyboard/blob/heatmap/qmk_files/heatmap.c"><code>heatmap.c</code></a> and <a href="https://github.com/DanielGerlinghoff/keyboard/blob/heatmap/qmk_files/heatmap.h"><code>heatmap.h</code></a> into the folder with your <code>keymap.c</code>. Include it into the build process by adding to the <code>rules.mk</code> </p>
+  <pre><code>
+    SRC += heatmap.c
+  </code></pre>
+  <p>Assuming your keyboard is wired like this ...</p>
+  <img src="img/2_wiring.png" width="125">
+  <p>personalise <code>heatmap.h</code> as follows</p>
+  <ol>
+    <li>Insert your personal <code>USERHASH</code> from step 1</li>
+    <li>Set <code>PHYSICAL_ROWS</code> to 2 and <code>PHYSICAL_COLS</code> to 3, as per the maximum keyboard dimensions</li>
+    <li>Set the transformation matrices such that each element points to the respective row/column in the wired matrix (and use right-padding of -1) </li>
+  </ol>
+  <pre><code class="language-c">
+    transform_row[PHYSICAL_ROWS][PHYSICAL_COLS] = { \
+     {0, 0, -1}, \
+     {1, 1,  1}, \
+    };
+    transform_col[PHYSICAL_ROWS][PHYSICAL_COLS] = { \
+     {0, 2, -1}, \
+     {0, 1,  2}, \
+    };
+  </code></pre>
+  <p>In <code>keymap.c</code>, <code>#include "heatmap.h"</code> and create a custom keycode (e.g. <code>KC_HEAT</code>) for printing out the keycounts in the next step. Then add the following code snippet to the <code>process_record_user</code> function</p>
+  <pre><code class="language-c">
+    // Functions for heatmap generation
+    if (record-&gt;event.pressed) {
+        // Update key counter for heatmap
+        increment_keycount(record);
+
+        // Dump keycount array as a Python list
+        if (keycode == KC_HEAT)
+            dump_keycount();
+    }
+  </code></pre>
+  <p>Use <a href="https://github.com/DanielGerlinghoff/keyboard/blob/heatmap/qmk_files/keymap.c">this example</a> of <code>keymap.c</code> as a reference. Compile the firmware and flash it.</p>
+</div>
+
+<h2 class="accordion-heading">Step 3: Submit your keycounts</h2>
+<div class="accordion-content">
+  <p>Everything is straightforward from here</p>
+  <ol>
+    <li>After some typing, place your cursor into the <em>User Hash</em> field on the top right</li>
+    <li>Invoke the keycombination you assigned to <code>KC_HASH</code> which fills the two fields</li>
+    <li>Submit and have your heatmap drawn</li>
+  </ol>
+  <img src="img/3_heatmap.png" width="130">
+</div>
+
+<h2 class="accordion-heading">Step 4: View the heatmap</h2>
+<div class="accordion-content">
+  <p>To view the heatmap without submitting new keycounts, insert only your hash and submit.</p>
+</div>
+
+<script>
+  // Get all accordion headings
+  var accordionHeadings = document.querySelectorAll('.accordion-heading');
+
+  // Add click event listener to each heading
+  accordionHeadings.forEach(function(heading) {
+    heading.addEventListener('click', function() {
+      var isExpanded = this.classList.contains('expanded');
+
+      // Collapse all accordion sections
+      accordionHeadings.forEach(function(otherHeading) {
+        otherHeading.classList.remove('expanded');
+        otherHeading.nextElementSibling.classList.remove('show');
+      });
+
+      // Toggle the clicked section
+      if (!isExpanded) {
+        this.classList.add('expanded');
+        this.nextElementSibling.classList.add('show');
+      }
+    });
+  });
+</script>
