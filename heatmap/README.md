@@ -1,12 +1,25 @@
 # Heatmap for Key Usage Tracking
 
 ## Generate the Database
+
+Table to register the users with their physical keymaps:
+
+``` sql
+CREATE TABLE `keymap` (
+  `user` varchar(64) NOT NULL PRIMARY KEY COMMENT '256-bit User Hash',
+  `map` varchar(500) NOT NULL COMMENT 'Array of Physical Key Widths'
+) DEFAULT CHARSET=utf8;
+```
+
+Table to store the keycounts of the users:
+
 ``` sql
 CREATE TABLE `keycount` (
   `id` int NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `user` varchar(64) NOT NULL COMMENT '256-bit User Hash',
-  `count` varchar(500) NOT NULL COMMENT 'Python-formatted List of Key Counts'
+  `user` varchar(64) NOT NULL,
+  `count` varchar(500) NOT NULL COMMENT 'Python-formatted List of Key Counts',
+  FOREIGN KEY (`user`) REFERENCES `keymap`(`user`)
 ) DEFAULT CHARSET=utf8;
 ```
 

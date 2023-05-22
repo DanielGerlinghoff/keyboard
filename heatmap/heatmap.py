@@ -15,63 +15,90 @@ import base64
 from keymap import create_keymap
 
 
-def retrieve_keycount(user_hash):
-    """Retrieve the key count data for a user from a MySQL database.
+class DbConnector:
+    """Connect to the MySQL database.
 
-    The function reads the credentials for the database from a PHP file named
-    db_credentials.php, connects to the database using the provided
-    credentials, and executes a SQL query to select the key count data for a
-    user with a specified hash. The function returns a NumPy array
-    containing the accumulated key count data for the specified user.
+    The class reads the credentials for the database from a PHP file named
+    db_credentials.php. It connects to the database using the provided
+    credentials, and assigns a cursor to execute SQL queries."
     """
 
-    # Define a regular expression to match the variable definitions
-    var_pattern = re.compile(r"\$(\w+)\s*=\s*[\'\"](.+?)[\'\"]\s*;")
+    def __init__(self):
+        # Define a regular expression to match the variable definitions
+        var_pattern = re.compile(r"\$(\w+)\s*=\s*[\'\"](.+?)[\'\"]\s*;")
 
-    # Open the db_credentials.php file and read its contents
-    with open("db_credentials.php", "r") as f:
-        contents = f.read()
+        # Open the db_credentials.php file and read its contents
+        with open("db_credentials.php", "r") as f:
+            contents = f.read()
 
-    # Find all variable definitions and store them in a dictionary
-    db_credentials = {}
-    for match in var_pattern.finditer(contents):
-        db_credentials[match.group(1)] = match.group(2)
+        # Find all variable definitions and store them in a dictionary
+        db_credentials = {}
+        for match in var_pattern.finditer(contents):
+            db_credentials[match.group(1)] = match.group(2)
 
-    # Connect to the MySQL database using the db_credentials dictionary
-    cnx = mysql.connector.connect(
-        host=db_credentials["servername"],
-        user=db_credentials["username"],
-        password=db_credentials["password"],
-        database=db_credentials["dbname"]
-    )
+        # Connect to the MySQL database using the db_credentials dictionary
+        self.cnx = mysql.connector.connect(
+            host=db_credentials["servername"],
+            user=db_credentials["username"],
+            password=db_credentials["password"],
+            database=db_credentials["dbname"]
+        )
 
-    # Create a cursor to execute SQL queries
-    cursor = cnx.cursor()
+        # Create a cursor to execute SQL queries
+        self.cursor = self.cnx.cursor()
+
+    def close(self):
+        self.cursor.close()
+        self.cnx.close()
+
+
+def retrieve_keymap(db, user_hash):
+    """Retrieve the key map data for a user from a MySQL database.
+
+    The function executes a SQL query to select the key map data for a user
+    with a specified hash. The function returns a NumPy array.
+    """
+
+    # Define the SQL query
+    query = f"SELECT map FROM keymap WHERE user=%s"
+
+    # Execute the query with the user hash parameter
+    db.cursor.execute(query, (user_hash,))
+    result = db.cursor.fetchone()
+
+    # Convert to NumPy array
+    map_str = result[0]
+    map_list = json.loads(map_str)
+    return np.array(map_list)
+
+
+def retrieve_keycount(db, user_hash):
+    """Retrieve the key count data for a user from a MySQL database.
+
+    The function executes a SQL query to select the key count data for a user
+    with a specified hash. The function returns a NumPy array containing the
+    accumulated key count data for the specified user.
+    """
 
     # Define the SQL query to select records with a specified user hash
     query = "SELECT time, count FROM keycount WHERE user=%s"
 
     # Execute the query with the user hash parameter
-    cursor.execute(query, (user_hash,))
+    db.cursor.execute(query, (user_hash,))
 
     # Save keycounts as NumPy array
     counts = []
-    for (time, count_str) in cursor:
+    for (time, count_str) in db.cursor:
         count_list = json.loads(count_str)
         counts.append(np.array(count_list))
     counts_total = np.stack(counts).sum(axis=0)
-
-    # Close the cursor and database connection
-    cursor.close()
-    cnx.close()
 
     # Return result
     return counts_total
 
 
 def draw_heatmap(keys, counts):
-    """
-    Draw a heatmap using a colormap to represent the counts of each key.
+    """Draw a heatmap using a colormap to represent the counts of each key.
 
     The function creates a keymap basemap. The keycount array is then upscaled
     and shifted to the key positions. The heatmap is smoothed using a Gaussian
@@ -163,13 +190,13 @@ if __name__ == "__main__":
     # Get the user hash argument from the command line
     user_hash = sys.argv[1]
 
-    # Retrieve key widths and counts from the database
-    keys = np.array([[0.75, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.00],
-                     [0.25, 1.50, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.50],
-                     [0.00, 1.75, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.25, 0.00],
-                     [0.00, 1.75, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.75, 1.00, 1.00],
-                     [0.25, 1.50, 1.25, 1.50, 6.25, 1.25, 1.50, 1.00, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]])
-    counts = retrieve_keycount(user_hash)
+    # Connect to the database and retrieve key widths and counts
+    db = DbConnector()
+
+    keys = retrieve_keymap(db, user_hash)
+    counts = retrieve_keycount(db, user_hash)
+
+    db.close()
 
     # Draw the heatmap and output to PHP side
     heatmap = draw_heatmap(keys, counts)

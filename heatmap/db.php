@@ -14,6 +14,28 @@ function connect_db() {
   return $conn;
 }
 
+// register a randomly generated user key and upload the keymap
+function register_keymap($map) {
+  // generate a random hex key
+  $random_key = bin2hex(random_bytes(32)); // 32 bytes = 256 bits
+
+  // get the database connection
+  $db = connect_db();
+
+  // prepare and execute the SQL statement to insert the data into the 'keymap' table
+  $stmt = $db->prepare("INSERT INTO keymap (user, map) VALUES (?, ?)");
+  $stmt->bind_param("ss", $random_key, $map);
+
+  $result = $stmt->execute();
+
+  // close the statement and database connection
+  $stmt->close();
+  $db->close();
+
+  // return the random key
+  return $random_key;
+}
+
 // insert data into the table and return a success or error message
 function insert_data($user, $count) {
   // get the current time in UTC format
