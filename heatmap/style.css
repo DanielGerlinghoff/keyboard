@@ -149,3 +149,46 @@ input[type="submit"]:hover, .accordion-heading:hover {
   max-height: 1000px; /* Set a value larger than the maximum expected height */
   padding: 0px 10px;
 }
+
+/* Styles for the alert messages */
+.alert {
+  display: none;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.4);
+}
+
+.alert.success {
+  display: flex;
+  background-color: #d4edda;
+  border-left: 4px solid #49d761;
+}
+
+.alert.error {
+  display: flex;
+  background-color: #f8d7da;
+  border-left: 4px solid #721c24;
+}
+
+.alert i {
+  margin-right: 10px;
+}
+
+.alert span {
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+.alert span code {
+  line-break: anywhere;
+}
+
+.alert .fa-check-circle {
+  color: #49d761;
+}
+
+.alert .fa-times-circle {
+  color: #721c24;
+}

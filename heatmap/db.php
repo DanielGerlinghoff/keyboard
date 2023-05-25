@@ -15,7 +15,7 @@ function connect_db() {
 }
 
 // register a randomly generated user key and upload the keymap
-function register_keymap($map) {
+function register_keymap($map, &$random_key) {
   // generate a random hex key
   $random_key = bin2hex(random_bytes(32)); // 32 bytes = 256 bits
 
@@ -27,16 +27,18 @@ function register_keymap($map) {
   $stmt->bind_param("ss", $random_key, $map);
 
   $result = $stmt->execute();
+  if (!$result)
+      return 0;
 
   // close the statement and database connection
   $stmt->close();
   $db->close();
 
-  // return the random key
-  return $random_key;
+  // return the success value
+  return 1;
 }
 
-// insert data into the table and return a success or error message
+// insert data into the table and return a success or error value
 function insert_data($user, $count) {
   // get the current time in UTC format
   $time = gmdate("Y-m-d H:i:s");
@@ -45,33 +47,19 @@ function insert_data($user, $count) {
   $conn = connect_db();
 
   // prepare and execute the insert query
-  $unsuccessful_message = "Database upload was unsuccessful.";
-
   $stmt = $conn->prepare("INSERT INTO keycount (time, user, count) VALUES (?, ?, ?)");
-  if (!$stmt) {
-    $conn->close();
-    return $unsuccessful_message;
-  }
-
-  // execute the statement
   $stmt->bind_param("sss", $time, $user, $count);
-  if (!$stmt) {
-    $conn->close();
-    return $unsuccessful_message;
-  }
 
   $result = $stmt->execute();
-  if (!$result) {
-    $conn->close();
-    return $unsuccessful_message;
-  }
+  if (!$result)
+      return 0;
 
   // close the statement and the connection
   $stmt->close();
   $conn->close();
 
-  // set a success message
-  return "Upload successful!";
+  // return the success value
+  return 1;
 }
 
 // call Python script to generate heatmap
@@ -79,11 +67,11 @@ function draw_heatmap($user, &$image) {
   // generate heatmap from data
   exec("python3 heatmap.py $user", $output, $return);
   if ($return != 0) {
-    return "Heatmap generation was unsuccessful.";
+    return 0;
   }
   $image = $output[0];
 
-  // set a success message
-  return "Heatmap generated!";
+  // set a success value
+  return 1;
 }
 ?>

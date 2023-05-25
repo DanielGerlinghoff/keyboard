@@ -7,20 +7,45 @@ if (isset($_POST['submit'])) {
   $user = $_POST['user'];
   $count = $_POST['count'];
 
+  // TODO: check hash and count input
+  // TODO: check if hash exists in keymap table
+
+  // initialize success indicators
+  $success = 1;
+  $success_message = '';
+
   // insert data into the table
-  $success_message = insert_data($user, $count);
-  $success_message .= "<br>";
+  $success &= insert_data($user, $count);
+  if ($success) {
+    $success_message .= 'Upload successful';
+  } else {
+    $success_message .= 'Database upload was unsuccessful';
+  }
+  $success_message .= '<br>';
 
   // return the heatmap as HTML
   $heatmap = "";
-  $success_message .= draw_heatmap($user, $heatmap);
+  $success &= draw_heatmap($user, $heatmap);
+  if ($success) {
+    $success_message .= 'Heatmap generated (see below)';
+  } else {
+    $success_message .= 'Heatmap generation was unsuccessful';
+  }
 }
 
 if (isset($_POST['register'])) {
-    $map = $_POST['map'];
-    $user_hash = register_keymap($map);
+  $map = $_POST['map'];
+  $user_hash = "";
 
-    $hash_message = 'Your unique user key is <code>' . $user_hash . '</code>';
+  // TODO: check map input
+
+  // insert data into the database
+  $success = register_keymap($map, $user_hash);
+  if ($success) {
+    $success_message = 'Your unique user key is <code>' . $user_hash . '</code>';
+  } else {
+    $success_message = 'The keymap could not be uploaded';
+  }
 }
 ?>
 
@@ -28,6 +53,7 @@ if (isset($_POST['register'])) {
   <head>
     <title>maptikal | Heatmap Generator for QMK Keybords</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://kit.fontawesome.com/129a986cf5.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="container">
@@ -40,21 +66,27 @@ if (isset($_POST['register'])) {
             <p><textarea name="user" rows="2" cols="50" placeholder="User Hash (Step 3)" required></textarea></p>
             <p><textarea name="count" rows="5" cols="40" placeholder="Key Count Array" required></textarea></p>
             <p><input type="submit" name="submit" value="Submit and Draw Heatmap"></p>
-            <div id="success-message"></div>
+            <div id="submit-message" class="alert">
+              <i class="fas"></i>
+              <span></span>
+            </div>
           </form>
         </div>
         <div id="register-container">
           <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <p><textarea name="map" rows="5" cols="40" placeholder="Map of Key Widths (Step 1)" required></textarea></p>
             <p><input type="submit" name="register" value="Register Keymap"></p>
-            <div id="hash-message"></div>
+            <div id="register-message" class="alert">
+              <i class="fas"></i>
+              <span></span>
+            </div>
           </form>
         </div>
       </div>
     </div>
     <div id="image-container">
 <?php
-if (isset($heatmap)) {
+if (isset($_POST['submit']) and $success) {
   echo $heatmap;
 } else {
   echo "Your heatmap will be displayed here";
@@ -63,11 +95,30 @@ if (isset($heatmap)) {
     </div>
 
 <?php
-if (isset($_POST['submit'])) {
-  echo '<script>document.getElementById("success-message").innerHTML = "'.$success_message.'";</script>';
-}
-if (isset($_POST['register'])) {
-  echo '<script>document.getElementById("hash-message").innerHTML = "'.$hash_message.'";</script>';
+if (isset($_POST['submit']))
+  $id = "submit-message";
+if (isset($_POST['register']))
+  $id = "register-message";
+
+if (isset($id)) {
+  echo '<script>';
+  echo 'var submitMessage = document.getElementById("'. $id . '");';
+  echo 'var span = submitMessage.querySelector("span");';
+  echo 'var icon = submitMessage.querySelector("i");';
+
+  if ($success == 1) {
+    // If success, update classes and content
+    echo 'span.innerHTML = "' . $success_message . '";';
+    echo 'icon.classList.add("fa-check-circle");';
+    echo 'submitMessage.classList.add("alert", "success");';
+  } else {
+    // If error, update classes and content
+    echo 'span.innerHTML = "' . $success_message . '";';
+    echo 'icon.classList.add("fa-times-circle");';
+    echo 'submitMessage.classList.add("alert", "error");';
+  }
+
+  echo '</script>';
 }
 ?>
   </body>
