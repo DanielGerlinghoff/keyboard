@@ -5,7 +5,7 @@ require_once 'db.php';
 if (isset($_POST['submit'])) {
   // get the user input
   $user = $_POST['user'];
-  $count = $_POST['count'];
+  $count = !empty($_POST['count']) ? $_POST['count'] : null;
 
   // TODO: check hash and count input
   // TODO: check if hash exists in keymap table
@@ -14,14 +14,16 @@ if (isset($_POST['submit'])) {
   $success = 1;
   $success_message = '';
 
-  // insert data into the table
-  $success &= insert_data($user, $count);
-  if ($success) {
-    $success_message .= 'Upload successful';
-  } else {
-    $success_message .= 'Database upload was unsuccessful';
+  // insert data into the table if count is provided
+  if ($count !== null) {
+    $success &= insert_data($user, $count);
+    if ($success) {
+      $success_message .= 'Upload successful';
+    } else {
+      $success_message .= 'Database upload was unsuccessful';
+    }
+    $success_message .= '<br>';
   }
-  $success_message .= '<br>';
 
   // return the heatmap as HTML
   $heatmap = "";
@@ -64,7 +66,7 @@ if (isset($_POST['register'])) {
         <div id="submit-container">
           <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <p><textarea name="user" rows="2" cols="50" placeholder="User Hash (Step 3)" required></textarea></p>
-            <p><textarea name="count" rows="5" cols="40" placeholder="Key Count Array" required></textarea></p>
+            <p><textarea name="count" rows="5" cols="40" placeholder="Key Count Array (optional)"></textarea></p>
             <p><input type="submit" name="submit" value="Submit and Draw Heatmap"></p>
             <div id="submit-message" class="alert">
               <i class="fas"></i>
