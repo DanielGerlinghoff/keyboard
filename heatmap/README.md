@@ -7,7 +7,9 @@ Table to register the users with their physical keymaps:
 ``` sql
 CREATE TABLE `keymap` (
   `user` varchar(64) NOT NULL PRIMARY KEY COMMENT '256-bit User Hash',
-  `map` varchar(500) NOT NULL COMMENT 'Array of Physical Key Widths'
+  `map` varchar(500) NOT NULL COMMENT 'Array of Physical Key Widths',
+  `rows` int NOT NULL COMMENT 'Number of Physical Rows',
+  `cols` int NOT NULL COMMENT 'Number of Physical Columns'
 ) DEFAULT CHARSET=utf8;
 ```
 

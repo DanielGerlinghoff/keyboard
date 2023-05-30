@@ -3,50 +3,53 @@
 require_once 'db.php';
 
 if (isset($_POST['submit'])) {
-  // get the user input
-  $user = $_POST['user'];
-  $count = !empty($_POST['count']) ? $_POST['count'] : null;
-
-  // TODO: check hash and count input
-  // TODO: check if hash exists in keymap table
-
   // initialize success indicators
   $success = 1;
-  $success_message = '';
+  $success_message = "";
+
+  // get the user input and check for validity
+  $user = $_POST['user'];
+  $success &= check_userhash($user, $success_message);
+
+  $count = !empty($_POST['count']) ? $_POST['count'] : null;
+  $dims = [];
+  if ($count !== null) {
+    $count = preg_replace('/[\r\n\s]+/', '', $count);
+    $success &= check_array($count, $dims, $success_message);
+  }
+
+  // check if the dims are the same as specified in keymap table
+  if ($success and $count !== null) {
+    $success &= check_dims($user, $dims, "keymap", $success_message);
+  }
 
   // insert data into the table if count is provided
-  if ($count !== null) {
-    $success &= insert_data($user, $count);
-    if ($success) {
-      $success_message .= 'Upload successful';
-    } else {
-      $success_message .= 'Database upload was unsuccessful';
-    }
-    $success_message .= '<br>';
+  if ($success and $count !== null) {
+    $success &= insert_keycount($user, $count, $success_message);
   }
 
   // return the heatmap as HTML
   $heatmap = "";
-  $success &= draw_heatmap($user, $heatmap);
-  if ($success) {
-    $success_message .= 'Heatmap generated (see below)';
-  } else {
-    $success_message .= 'Heatmap generation was unsuccessful';
-  }
+  $success &= draw_heatmap($user, $heatmap, $success_message);
 }
 
 if (isset($_POST['register'])) {
-  $map = $_POST['map'];
   $user_hash = "";
+  $dims = [];
 
-  // TODO: check map input
+  // initialize success indicators
+  $success = 1;
+  $success_message = "";
+
+  // get the user input, remove line breaks and check for validity
+  $map = $_POST['map'];
+  $map = preg_replace('/[\r\n\s]+/', '', $map);
+
+  $success &= check_array($map, $dims, $success_message);
 
   // insert data into the database
-  $success = register_keymap($map, $user_hash);
   if ($success) {
-    $success_message = 'Your unique user key is <code>' . $user_hash . '</code>';
-  } else {
-    $success_message = 'The keymap could not be uploaded';
+    $success &= register_keymap($user_hash, $map, $dims, $success_message);
   }
 }
 ?>
@@ -88,7 +91,7 @@ if (isset($_POST['register'])) {
     </div>
     <div id="image-container">
 <?php
-if (isset($_POST['submit']) and $success) {
+if (isset($_POST['submit']) and $heatmap != "") {
   echo $heatmap;
 } else {
   echo "Your heatmap will be displayed here";
@@ -109,12 +112,12 @@ if (isset($id)) {
   echo 'var icon = submitMessage.querySelector("i");';
 
   if ($success == 1) {
-    // If success, update classes and content
+    // if success, update classes and content
     echo 'span.innerHTML = "' . $success_message . '";';
     echo 'icon.classList.add("fa-check-circle");';
     echo 'submitMessage.classList.add("alert", "success");';
   } else {
-    // If error, update classes and content
+    // if error, update classes and content
     echo 'span.innerHTML = "' . $success_message . '";';
     echo 'icon.classList.add("fa-times-circle");';
     echo 'submitMessage.classList.add("alert", "error");';
