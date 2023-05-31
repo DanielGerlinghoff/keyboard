@@ -56,8 +56,9 @@ if (isset($_POST['register'])) {
 
 <html>
   <head>
-    <title>maptikal | Heatmap Generator for QMK Keybords</title>
+    <title>maptikal | Heatmap Generator for QMK Keyboards</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://kit.fontawesome.com/129a986cf5.js" crossorigin="anonymous"></script>
   </head>
   <body>
