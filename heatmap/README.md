@@ -26,8 +26,25 @@ CREATE TABLE `keycount` (
 ```
 
 ## Install Python packages on the server
+
 ``` shell
 python3 -m pip install mysql-connector-python
 python3 -m pip install matplotlib
 python3 -m pip install scipy
+```
+
+## Deploy all or single files to the server
+
+Enable SSH key access on the server.
+Source the credentials script to set variables for `USERNAME`, `SERVER` and `DIRECTORY`.
+
+``` shell
+source deploy_credentials.sh
+```
+
+Deploy all files except directories and files specified in the `exclude_list`.
+Optionally, pass the single `<file>` to be uploaded.
+
+``` shell
+./deploy.sh [-f <file>]
 ```
